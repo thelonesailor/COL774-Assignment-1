@@ -12,8 +12,6 @@ x = list(csv.reader(csvfile))
 csvfile=open("logisticY.csv", 'r')
 y = list(csv.reader(csvfile))
 
-# print(len(x))
-# print(len(y))
 
 m=len(x)
 n=2
@@ -24,10 +22,16 @@ for i in range(m):
     y2.append(float(y[i][0]))
 
 
-# normalise
+# normalise the data
 meanx=[0,0]
-meanx[0]=sum(x3[0])/m
-meanx[1]=sum(x3[1])/m
+# meanx[0]=sum(x3[0])/m
+# meanx[1]=sum(x3[1])/m
+
+for i in range(m):
+    meanx[0]+=x3[i][0]
+    meanx[1]+=x3[i][1]
+meanx[0]/=m
+meanx[1]/=m
 
 v=[0,0]
 for i in range(m):
@@ -45,10 +49,13 @@ for i in range(m):
 
 
 x2=[]
+# for y=1
 x4=[]
 x5=[]
+# for y=0
 x6=[]
 x7=[]
+
 for i in range(m):
     x2.append(np.array([1,x3[i][0],x3[i][1]]))
 
@@ -61,58 +68,46 @@ for i in range(m):
 
 X=np.array(x2)
 Y=np.array(y2)
-# print(X.shape)
-# print(Y.shape)
-
 
 
 
 epsilon=0.000001
 t=0
-theta=np.array([[0],[0],[0]])
 theta=np.array([0,0,0])
-
 
 while(True):
 
     X3=np.matmul(X,theta)
     X2=expit(np.matmul(X,theta))
 
-
     gradient=np.dot(X.T,(Y-X2))
-    # print(gradient.shape)
 
+# calulate Hessian matrix
     H=np.zeros((n+1,n+1))
     for j in range(m):
         x2=X3[j]
-        temp=np.outer(X[j].T,X[j])
-        # print(temp)
-        # print()
-        temp=expit(x2)*(1-expit(x2))
-        # print(x2)
         H=H-((expit(x2)*(1-expit(x2)))*(np.outer(X[j].T,X[j])))
-        # print(H)
 
     t+=1
 
+# update theta
     thetaold=theta
-    # print(np.linalg.inv(H))
-    # print(gradient)
     theta=theta-np.matmul(np.linalg.inv(H),gradient)
 
-    temp=np.linalg.norm(theta-thetaold)
-    # print(temp)
-    if(temp<epsilon):
+# check if converged
+    convergence=np.linalg.norm(theta-thetaold)
+    if(convergence<epsilon):
         break
 
-print(t)
-print(theta)
+print("Number of iterations={}".format(t))
+print("theta={}".format(theta))
 
 
 plt.ioff()
 fig=plt.figure()
 ax1 = fig.add_subplot(1,1,1)
 
+# plots the training data & decision boundary
 def pl():
     ax1.clear()
     ax1.scatter(x4, x5, label= "y=1 Training Data", color= "red",
@@ -120,7 +115,7 @@ def pl():
     ax1.scatter(x6, x7, label= "y=0 Training Data", color= "blue",
                 marker= ".", s=10)
 
-    xvalues=xvalues=np.arange(min(min(x4),min(x6))-0.2,max(max(x4),max(x6))+0.2,0.1)
+    xvalues=np.linspace(min(min(x4),min(x6)),max(max(x4),max(x6)),100)
 
     the=theta
     yvalues=-1*(the[1]*xvalues+the[0])/the[2]

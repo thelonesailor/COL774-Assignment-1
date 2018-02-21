@@ -5,15 +5,12 @@ import matplotlib.animation as animation
 import time
 import numpy as np
 
-
-
+# read the data
 csvfile=open("linearX.csv", 'r')
 x = list(csv.reader(csvfile))
 csvfile=open("linearY.csv", 'r')
 y = list(csv.reader(csvfile))
 
-# print(len(x))
-# print(len(y))
 
 m=len(x)
 n=1
@@ -23,7 +20,8 @@ for i in range(m):
     x3.append(float(x[i][0]))
     y2.append(float(y[i][0]))
 
-# normalise
+
+# normalise the data
 meanx=sum(x3)/m
 v=0
 for i in range(m):
@@ -38,10 +36,9 @@ x2=[]
 for i in range(m):
     x2.append(np.array([1,x3[i]]))
 
+
 X=np.array(x2)
 Y=np.array(y2)
-# print(X)
-# print(Y)
 
 xvalues=np.arange(min(x3)-1,max(x3)+1,0.1)
 
@@ -49,6 +46,7 @@ plt.ion()
 fig=plt.figure()
 ax1 = fig.add_subplot(1,1,1)
 
+# plots hypothesis funtion and training data
 def pl(th):
     ax1.clear()
     ax1.scatter(x3, y2, label= "Training Data", color= "r",
@@ -66,25 +64,26 @@ def pl(th):
     plt.show()
     plt.pause(0.001)
 
-# J(theta)
+# return the value of J(theta)
 def findcost(th):
     ans=0
     for i in range(m):
-        # print(th)
         temp=(Y[i]-np.sum(np.dot(th,X[i])))
         ans+=(temp*temp)
-        # print(type(ans))
     ans=float(ans/2)
     return ans
 
 def find_convergence(th1,th2):
     return abs(findcost(th1)-findcost(th2))
 
+# Part (a)&(b)
 epsilon=0.0000001
 # epsilon=5
 eta=0.001
 theta=np.array([0,0])
 t=0
+
+pl(theta)
 
 while(True):
 
@@ -92,23 +91,24 @@ while(True):
     for i in range(m):
         hthetas.append(np.sum(np.dot(theta,X[i])))
 
-    temp=np.zeros((n+1))
+# calculate -ve of gradient
+    gradient=np.zeros((n+1))
     for i in range(m):
-        t2=(Y[i]-hthetas[i])
-        temp+=t2*X[i]
-    theta2=theta
-    theta=theta+eta*temp
-    t+=1
-    # print(t)
+        gradient+=(Y[i]-hthetas[i])*X[i]
 
-    print(theta2)
-    print(theta)
-    print()
+# update theta
+    thetaold=theta
+    theta=theta+eta*gradient
+
+    t+=1
+
+    print("theta={}\n".format(theta))
 
     pl(theta)
 
-    convergence=find_convergence(theta2,theta)
-    print("convergence=",convergence)
+# check if converged
+    convergence=find_convergence(thetaold,theta)
+    print("convergence={}".format(convergence))
     if(convergence<epsilon):
         break
 
@@ -127,95 +127,85 @@ import numpy as np
 plt.ion()
 
 fig = plt.figure()
-# ax = fig.gca(projection='3d')
 ax = fig.add_subplot(111, projection='3d')
 
-
-xvalues = np.linspace(0, 2, 130)
-# xvalues = np.linspace(0.9, 1.1, 30)
-yvalues = np.linspace(-1, 1, 130)
+# plot J(theta)
+xvalues = np.linspace(0, 2, 70)
+yvalues = np.linspace(-1, 1, 70)
 xvalues, yvalues = np.meshgrid(xvalues, yvalues)
-# Z = findcost(np.array([xvalues,yvalues]))
 Zs = np.array([findcost(np.array([x,y])) for x,y in zip(np.ravel(xvalues), np.ravel(yvalues))])
 Z = Zs.reshape(xvalues.shape)
 
-# print("xvalues=",xvalues)
-# print("yvalues=",yvalues)
-# print("Z=",Z)
-
-surf = ax.plot_surface(xvalues, yvalues, Z, cmap=cm.coolwarm,linewidth=0,alpha=0.6 ,antialiased=False,label='J(theta)')
+surf = ax.plot_surface(xvalues, yvalues, Z, cmap=cm.coolwarm,linewidth=0,alpha=0.7 ,antialiased=False,label='J(theta)')
 plt.show()
 plt.pause(0.001)
 
-def pl2(th):
+# plots point in 3d mesh
+def plot_2(th):
 
-    # ax.zaxis.set_major_locator(LinearLocator(10))
-    # ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
-
-    # Add a color bar which maps values to colors.
-    # fig.colorbar(surf, shrink=0.5, aspect=5)
-    # ax1.plot(np.array([th[0]]), np.array([th[1]]), np.array([findcost(th)]), color= "b")
-    ax.scatter(th[0],th[1],findcost(th),c="black",depthshade=False,s=5)
+    ax.scatter(th[0],th[1],findcost(th),c="black",depthshade=False,s=6)
 
     plt.xlabel('theta0')
     plt.ylabel('theta1')
-    # plt.legend()
     plt.title('Q1 (c)')
     plt.show()
-    plt.pause(0.001)
+    plt.pause(0.2)
+    # plt.pause(0.001)
 
-# epsilon=1
 
 theta=np.array([0,0])
 t=0
-thlist=[]
-levels=[]
+levels=[] # stores the values of J(theta) at each iteration
+levels.append(findcost(theta))
+thetas=[]
+thetas.append(theta)
 while(True):
     hthetas=[]
     for i in range(m):
         hthetas.append(np.sum(np.dot(theta,X[i])))
 
-    temp=np.zeros((n+1))
+    gradient=np.zeros((n+1))
     for i in range(m):
-        t2=(Y[i]-hthetas[i])
-        temp+=t2*X[i]
-    theta2=theta
-    theta=theta+eta*temp
+        gradient+=(Y[i]-hthetas[i])*X[i]
+    thetaold=theta
+    theta=theta+eta*gradient
 
-    thlist.append(tuple(theta))
     levels.append(findcost(theta))
+    thetas.append(theta)
 
     t+=1
-    # print(t)
 
-    print(theta2)
-    print(theta)
-    print()
+    print("theta={}\n".format(theta))
 
-    pl2(theta)
+    plot_2(theta)
 
-    convergence=find_convergence(theta2,theta)
+    convergence=find_convergence(thetaold,theta)
     print("convergence=",convergence)
     if(convergence<epsilon):
         break
 
 print("Number of iterations=",t)
 plt.ioff()
-pl2(theta)
+plot_2(theta)
 
 
+
+# part (d)&(e)
+# plots contours at each iteration
 
 plt.ion()
 plt.figure()
 
 plt.xlabel('theta0')
 plt.ylabel('theta1')
-plt.title('eta=0.021')
+plt.title('eta={}'.format(eta))
 for i in range(len(levels)):
-    if(levels[i]<0):break
-    CS = plt.contour(xvalues, yvalues, Z,[levels[i]])
+    print(i)
+    plt.contour(xvalues, yvalues, Z,levels[i])
+    plt.scatter(thetas[i][0],thetas[i][1])
+
     plt.show()
-    plt.pause(0.02)
+    plt.pause(0.2)
 
 plt.ioff()
 plt.show()
