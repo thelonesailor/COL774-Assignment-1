@@ -1,0 +1,6 @@
+\theta = (X^{T}X)^{-1} X^{T}Y
+\theta = ((X^{T}WX)^{-1})X^{T}WY
+W_{ii}(x) = exp(-\frac{(x-x^{(i)})^{2}}{2\tau^{2}})  \hspace{1} 0\leq i<m
+
+X^{T} \Sigma^{-1} (\mu_{0}-\mu_{1}) + (\mu_{0}-\mu_{1})^{T} \Sigma^{-1} X + (\mu_{1}^{T} \Sigma^{-1} \mu_{1} - \mu_{0}^{T} \Sigma^{-1} \mu_{0}) = 2log_{e}(\frac{\phi}{1-\phi}) 
+(X-\mu_{1})^{T} \Sigma_{1}^{-1} (X-\mu_{1}) - (X-\mu_{0})^{T} \Sigma_{0}^{-1} (X-\mu_{0}) - 2log_{e}(\frac{\phi}{1-\phi}) + log_{e}(\frac{\left|\Sigma_{1}\right|}{\left|\Sigma_{0}\right|}) = 0
