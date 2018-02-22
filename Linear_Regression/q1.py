@@ -20,6 +20,19 @@ for i in range(m):
     x3.append(float(x[i][0]))
     y2.append(float(y[i][0]))
 
+# # a different dataset
+# from sklearn import datasets, linear_model
+#
+# diabetes = datasets.load_diabetes()
+# diabetes_X = diabetes.data[:, np.newaxis, 2]
+# data = diabetes_X[:-20]
+# y_data = diabetes.target[:-20]
+#
+# x3=data
+# y2=y_data
+# m=len(data)
+# print(len(data))
+# print(len(y_data))
 
 # normalise the data
 meanx=sum(x3)/m
